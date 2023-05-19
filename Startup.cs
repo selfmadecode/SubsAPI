@@ -2,10 +2,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using SubsAPI.Data;
+using SubsAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +29,11 @@ namespace SubsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureEntityFrameworkDbContext(services);
+            ConfigureSwagger(services);
+
+            ConfigureDIService(services);
+
             services.AddControllers();
         }
 
@@ -36,6 +45,9 @@ namespace SubsAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Subs API v1"));
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -45,6 +57,44 @@ namespace SubsAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+
+        private void ConfigureEntityFrameworkDbContext(IServiceCollection services)
+        {
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<ApplicationDbContext>(options =>
+                          options.UseSqlServer(connectionString));
+        }
+
+        private void ConfigureDIService(IServiceCollection services)
+        {
+            services.AddScoped<IAuthService, AuthService>();
+        }
+
+        private void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1",
+                       new OpenApiInfo
+                       {
+                           Title = "SUBS API",
+                           Version = "v1",
+                           Description = "Yellowdot Subs Platform",
+                           Contact = new OpenApiContact
+                           {
+                               Name = "Yellowdot",
+                               Email = "Info@yellowdot.com"
+                           },
+                           License = new OpenApiLicense
+                           {
+                               Name = "MIT License",
+                               Url = new Uri("https://en.wikipedia.org/wiki/MIT_Lincense")
+                           }
+                       });
+                c.DescribeAllParametersInCamelCase();
             });
         }
     }
