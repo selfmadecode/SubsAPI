@@ -1,17 +1,14 @@
 ﻿using SubsAPI.Models.Enum;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SubsAPI.Entities
 {
-    public class User
+    public class Service
     {
-        public Guid Id { get; set; }
-
-        public string ServiceId { get; set; }
-
+        [Key]
+        public string Id { get; set; } // serviceId
         public string Password { get; set; }
-
         public DateTime DateCreated { get; set; }
-
     }
 }

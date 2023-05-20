@@ -7,8 +7,8 @@ namespace SubsAPI.Models.Enum
 {
     public enum SubscriptionStatus
     {
-        Subscribed,
-        Unsubscribed,
+        Active,
+        InActive,
         NotSubscribed
     }
 }
