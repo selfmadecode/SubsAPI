@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SubsAPI.Data;
+using SubsAPI.Helpers;
 using SubsAPI.Models;
 using SubsAPI.Services;
 using System;
@@ -48,6 +49,7 @@ namespace SubsAPI
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Subs API v1"));
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseHttpsRedirection();
 
