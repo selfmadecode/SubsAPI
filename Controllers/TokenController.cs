@@ -13,7 +13,6 @@ namespace SubsAPI.Controllers
     public class TokenController : BaseController
     {
         private readonly ITokenConfigService _tokenConfig;
-
         public TokenController(ITokenConfigService tokenConfig)
         {
             _tokenConfig = tokenConfig;
