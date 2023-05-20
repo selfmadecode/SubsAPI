@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SubsAPI.Data;
 using SubsAPI.DTO;
@@ -18,58 +19,59 @@ using System.Threading.Tasks;
 
 namespace SubsAPI.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : BaseService, IAuthService
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IConfiguration _configuration;
+        private static Random random = new Random();
+        private readonly TokenLenght _tokenLenght;
 
-
-        public AuthService(ApplicationDbContext dbContext, IConfiguration configuration)
+        public AuthService(ApplicationDbContext dbContext, IConfiguration configuration, IOptions<TokenLenght> tokenLenght)
         {
             _dbContext = dbContext;
-            _configuration = configuration;
+            _tokenLenght = tokenLenght.Value;
         }
         public async Task<BaseResponse<JwtResponseDTO>> Login(LoginDto model)
         {
             var result = new BaseResponse<JwtResponseDTO>();
 
-            var user = await _dbContext.Users
-                .FirstOrDefaultAsync(x => x.ServiceId == model.ServiceId);
+            var service = await _dbContext.Services
+                .FirstOrDefaultAsync(x => x.Id == model.ServiceId);
 
             // Incorrect password
-            if (user == null || user.Password.Decrypt() != model.Password)
+            if (service == null || service.Password.Decrypt() != model.Password)
             {
-                result.Errors.Add("ServiceId or Password incorrect");
-                return result;
+                Errors.Add("ServiceId or Password incorrect");
+                result.ResponseMessage = "ServiceId or Password incorrect";
+                return new BaseResponse<JwtResponseDTO>(result.ResponseMessage, Errors);
             }
             
-            var data = await GenerateToken(user);
+            var data = await GenerateToken(service);
 
             result.Data = data;
             return result;
         }
 
-        private async Task<JwtResponseDTO> GenerateToken(User user)
+        private async Task<JwtResponseDTO> GenerateToken(Service service)
         {
-            var userToken = await _dbContext.UserTokens.FirstOrDefaultAsync(x => x.UserId == user.Id);
+            var userToken = await _dbContext.UserTokens.FirstOrDefaultAsync(x => x.ServiceId == service.Id);
 
             string token = "";
             DateTime expiration;
 
             if (userToken == null)
             {
-                (token, expiration) = await CreateJwtTokenAsync(user);
+                (token, expiration) = await CreateTokenAsync(_tokenLenght.AuthToken, _dbContext);
 
                 await _dbContext.UserTokens.AddAsync(new UserToken
                 {
                     Token = token,
                     Expiration = expiration,
-                    UserId = user.Id
+                    ServiceId = service.Id
                 });
             }
-            else if (userToken.Expiration < DateTime.Now) // has expired
+            else if (userToken.Expiration < DateTime.UtcNow) // has expired
             {
-                (token, expiration) = await CreateJwtTokenAsync(user);
+                (token, expiration) = await CreateTokenAsync(_tokenLenght.AuthToken, _dbContext);
 
                 userToken.Expiration = expiration;
                 userToken.Token = token;
@@ -89,38 +91,6 @@ namespace SubsAPI.Services
                 Token = token,
                 Expiration = expiration
             };
-        }
-
-        private async Task<(string, DateTime)> CreateJwtTokenAsync(User user)
-        {
-
-            var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
-
-            var userClaims = await BuildUserClaims(user);
-
-            var signKey = new SymmetricSecurityKey(key);
-
-            var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _configuration.GetSection("JWT:ValidIssuer").Value,
-                notBefore: DateTime.UtcNow,
-                audience: _configuration.GetSection("JWT:ValidAudience").Value,
-                expires: DateTime.UtcNow.AddHours(_dbContext.TokenExpiration.First().Hours),
-                claims: userClaims,
-                signingCredentials: new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256));
-
-            return (new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken), jwtSecurityToken.ValidTo);
-        }
-
-        private async Task<List<Claim>> BuildUserClaims(User user)
-        {
-            var userClaims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.ServiceId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            
-            return userClaims;
-        }
+        }        
     }
 }
