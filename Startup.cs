@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SubsAPI.Data;
+using SubsAPI.Models;
 using SubsAPI.Services;
 using System;
 using System.Collections.Generic;
@@ -71,6 +72,9 @@ namespace SubsAPI
         private void ConfigureDIService(IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<ITokenConfigService, TokenConfigService>();
+            services.Configure<TokenLenght>(Configuration.GetSection("TokenLenght"));
         }
 
         private void ConfigureSwagger(IServiceCollection services)
