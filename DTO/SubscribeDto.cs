@@ -27,7 +27,7 @@ namespace SubsAPI.DTO
     }
 
     public class UnSubscribeDto : SubscribeDto
-    {
+    {                
 
     }
     

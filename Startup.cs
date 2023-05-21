@@ -76,6 +76,7 @@ namespace SubsAPI
         private void ConfigureDIService(IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<ITokenConfigService, TokenConfigService>();
             services.Configure<TokenLenght>(Configuration.GetSection("TokenLenght"));
