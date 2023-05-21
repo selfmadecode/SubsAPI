@@ -1,20 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using SubsAPI.Data;
 using SubsAPI.DTO;
 using SubsAPI.Entities;
 using SubsAPI.Helpers;
 using SubsAPI.Models;
-using SubsAPI.Services;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SubsAPI.Services
@@ -22,13 +14,15 @@ namespace SubsAPI.Services
     public class AuthService : BaseService, IAuthService
     {
         private readonly ApplicationDbContext _dbContext;
-        private static Random random = new Random();
         private readonly TokenLenght _tokenLenght;
+        private readonly ICacheService _cacheService;
 
-        public AuthService(ApplicationDbContext dbContext, IConfiguration configuration, IOptions<TokenLenght> tokenLenght)
+        public AuthService(ApplicationDbContext dbContext, IConfiguration configuration,
+            IOptions<TokenLenght> tokenLenght, ICacheService cacheService)
         {
             _dbContext = dbContext;
             _tokenLenght = tokenLenght.Value;
+            _cacheService = cacheService;
         }
         public async Task<BaseResponse<JwtResponseDTO>> Login(LoginDto model)
         {
@@ -68,6 +62,9 @@ namespace SubsAPI.Services
                     Expiration = expiration,
                     ServiceId = service.Id
                 });
+
+                // set the token in the memory cache
+                _cacheService.SetData(service.Id, token, expiration);
             }
             else if (userToken.Expiration < DateTime.UtcNow) // has expired
             {
@@ -77,6 +74,9 @@ namespace SubsAPI.Services
                 userToken.Token = token;
 
                 _dbContext.UserTokens.Update(userToken);
+
+                _cacheService.RemoveData(service.Id); // removed old token
+                _cacheService.SetData(service.Id, token, expiration); // set new token
             }
             else
             {
