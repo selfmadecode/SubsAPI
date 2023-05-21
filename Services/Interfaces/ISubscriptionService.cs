@@ -11,5 +11,6 @@ namespace SubsAPI.Services
     {
         Task<BaseResponse<SubscribeResponseDto>> Subscribe(SubscribeDto model);
         Task<BaseResponse<UnSubscribeResponseDto>> UnSubscribe(UnSubscribeDto model);
+        Task<BaseResponse<IEnumerable<UserSubscriptionsDto>>> Subsriptions(string serviceId, string token, string phoneNumber);
     }
 }

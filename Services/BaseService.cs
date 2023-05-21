@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SubsAPI.Data;
+using SubsAPI.DTO.InternalRequest;
+using SubsAPI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +45,45 @@ namespace SubsAPI.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return subscriptionId;
+        }
+
+        public async Task<BaseResponse<bool>> IsTokenValid(string token, string serviceId,  ApplicationDbContext _dbContext)
+        {
+            var result = new BaseResponse<bool>();
+
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(serviceId))
+            {
+                Errors.Add("Token or ServiceId is empty");
+                result.ResponseMessage = "Token or ServiceId is empty";
+                result.Data = false;
+
+                return new BaseResponse<bool>(result.ResponseMessage, Errors);
+            }
+
+            var currentDateTime = DateTime.Now;
+
+            var tokenData = await _dbContext.UserTokens.FirstOrDefaultAsync(t => t.Token == token && t.ServiceId == serviceId);
+
+            if (tokenData == null)
+            {
+                Errors.Add("Token or ServiceId not found");
+                result.ResponseMessage = "Token or ServiceId not found";
+                result.Data = false;
+
+                return new BaseResponse<bool>(result.ResponseMessage, Errors);
+            }
+
+            if (tokenData.Expiration < currentDateTime)
+            {
+                Errors.Add("Token has expired");
+                result.ResponseMessage = "Token has expired";
+                result.Data = false;
+
+                return new BaseResponse<bool>(result.ResponseMessage, Errors);
+            }
+
+            result.Data = true;
+            return result;
         }
     }
 }
