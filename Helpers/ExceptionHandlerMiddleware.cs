@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -10,10 +9,12 @@ namespace SubsAPI.Helpers
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlerMiddleware> _log;
 
-        public ExceptionHandlerMiddleware(RequestDelegate next)
+        public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> log)
         {
             _next = next;
+            _log = log;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -24,7 +25,7 @@ namespace SubsAPI.Helpers
             }
             catch (Exception ex)
             {
-                //_logger.LogError($"Something went wrong: {ex.Message} {ex.StackTrace}");
+                _log.LogError($"Something went wrong: {ex.Message} {ex.StackTrace}");
                 await HandleExceptionAsync(httpContext, ex);
             }
         }
