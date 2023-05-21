@@ -39,7 +39,7 @@ namespace SubsAPI.Controllers
         [ProducesResponseType(typeof(BaseResponse<IEnumerable<UserSubscriptionsDto>>), 200)]
         public async Task<IActionResult> Subscriptions([FromRoute] string serviceId, [FromQuery] string token, [FromQuery] string phoneNumber)
         {
-            return ReturnResponse(await _subscription.Subsriptions(serviceId, token, phoneNumber));
+            return ReturnResponse(await _subscription.Subcriptions(serviceId, token, phoneNumber));
         }
 
         [HttpPost]

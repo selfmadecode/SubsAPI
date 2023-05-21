@@ -38,9 +38,8 @@ namespace SubsAPI.Services
         {
             var result = new BaseResponse<SubscribeResponseDto>();
 
-            // user should onlly has one active subscription at a time
             var checkActiveSubscription = await _dbContext.Subscribers
-                .SingleAsync(x => x.ServiceId == model.ServiceId
+                .FirstOrDefaultAsync(x => x.ServiceId == model.ServiceId
                 && x.PhoneNumber == model.PhoneNumber &&
                 x.Status == SubscriptionStatus.Active);
 
@@ -91,7 +90,7 @@ namespace SubsAPI.Services
 
             // verify is a user has an active subscription
             var checkActiveSubscription = await _dbContext.Subscribers
-                .SingleAsync(x => x.ServiceId == model.ServiceId
+                .FirstOrDefaultAsync(x => x.ServiceId == model.ServiceId
                 && x.PhoneNumber == model.PhoneNumber &&
                 x.Status == SubscriptionStatus.Active);
 
@@ -146,7 +145,7 @@ namespace SubsAPI.Services
             }
 
             // User should only have a single active subscription in history
-            var activeSubscription = await subscriptions.SingleAsync(x => x.Status == SubscriptionStatus.Active);
+            var activeSubscription = await subscriptions.FirstOrDefaultAsync(x => x.Status == SubscriptionStatus.Active);
 
             if(activeSubscription != null)
             {
@@ -189,7 +188,7 @@ namespace SubsAPI.Services
         /// <param name="token"></param>
         /// <param name="phoneNumber"></param>
         /// <returns></returns>
-        public async Task<BaseResponse<IEnumerable<UserSubscriptionsDto>>> Subsriptions(string serviceId, string token, string phoneNumber)
+        public async Task<BaseResponse<IEnumerable<UserSubscriptionsDto>>> Subcriptions(string serviceId, string token, string phoneNumber)
         {
             var result = new BaseResponse<IEnumerable<UserSubscriptionsDto>>();
 
