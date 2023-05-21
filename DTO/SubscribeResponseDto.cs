@@ -22,4 +22,9 @@ namespace SubsAPI.DTO
         public SubscriptionStatus Status { get; set; }
         public DateTime? DateUnSubscribed { get; set; }
     }
+
+    public class UserSubscriptionsDto : SubscribeResponseDto
+    {
+        public DateTime? DateUnSubscribed { get; set; }
+    }
 }
