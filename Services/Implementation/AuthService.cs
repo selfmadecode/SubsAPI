@@ -15,14 +15,12 @@ namespace SubsAPI.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly TokenLenght _tokenLenght;
-        private readonly ICacheService _cacheService;
 
         public AuthService(ApplicationDbContext dbContext, IConfiguration configuration,
-            IOptions<TokenLenght> tokenLenght, ICacheService cacheService)
+            IOptions<TokenLenght> tokenLenght)
         {
             _dbContext = dbContext;
             _tokenLenght = tokenLenght.Value;
-            _cacheService = cacheService;
         }
         public async Task<BaseResponse<JwtResponseDTO>> Login(LoginDto model)
         {
@@ -62,9 +60,7 @@ namespace SubsAPI.Services
                     Expiration = expiration,
                     ServiceId = service.Id
                 });
-
-                // set the token in the memory cache
-                _cacheService.SetData(service.Id, token, expiration);
+                
             }
             else if (userToken.Expiration < DateTime.UtcNow) // has expired
             {
@@ -74,9 +70,6 @@ namespace SubsAPI.Services
                 userToken.Token = token;
 
                 _dbContext.UserTokens.Update(userToken);
-
-                _cacheService.RemoveData(service.Id); // removed old token
-                _cacheService.SetData(service.Id, token, expiration); // set new token
             }
             else
             {
