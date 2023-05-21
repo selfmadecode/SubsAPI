@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SubsAPI.DTO;
 using SubsAPI.Helpers;
 using SubsAPI.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SubsAPI.Controllers
@@ -35,6 +31,14 @@ namespace SubsAPI.Controllers
         public async Task<IActionResult> UnSubscribe([FromBody] UnSubscribeDto UnSubscribe)
         {
             return ReturnResponse(await _subscription.UnSubscribe(UnSubscribe));
+        }
+
+        [HttpGet]
+        [Route("{serviceId}")]
+        [ProducesResponseType(typeof(BaseResponse<JwtResponseDTO>), 200)]
+        public async Task<IActionResult> Subscriptions([FromRoute] string serviceId, [FromQuery] string token, [FromQuery] string phoneNumber)
+        {
+            return ReturnResponse(await _subscription.Subsriptions(serviceId, token, phoneNumber));
         }
     }
 }
