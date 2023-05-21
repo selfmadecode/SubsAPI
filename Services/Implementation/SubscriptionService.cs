@@ -206,6 +206,13 @@ namespace SubsAPI.Services
                 .OrderByDescending(x => x.SubscribeDate)
                 .Take(50);
 
+            if (!subscriptions.Any())
+            {
+                result.ResponseMessage = "No subscription for user found";
+                Errors.Add("No subscription for user found");
+                return new BaseResponse<IEnumerable<UserSubscriptionsDto>>(result.ResponseMessage, Errors);
+            }
+
             var data = await subscriptions.Select(x => new UserSubscriptionsDto
             {
                 ServiceId = x.ServiceId,
