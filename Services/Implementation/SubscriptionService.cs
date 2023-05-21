@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SubsAPI.Data;
 using SubsAPI.DTO;
@@ -16,11 +17,13 @@ namespace SubsAPI.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly TokenLenght _tokenLenght;
+        private readonly ILogger<SubscriptionService> _log;
 
-        public SubscriptionService(ApplicationDbContext dbContext, IOptions<TokenLenght> tokenLenght)
+        public SubscriptionService(ILogger<SubscriptionService> log, ApplicationDbContext dbContext, IOptions<TokenLenght> tokenLenght)
         {
             _dbContext = dbContext;
             _tokenLenght = tokenLenght.Value;
+            _log = log;
         }
 
         /// <summary>
@@ -56,6 +59,8 @@ namespace SubsAPI.Services
                 SubscribeDate = DateTime.Now,
                 SubscriptionId = GenerateSubscriptionId(_tokenLenght.Subscription)
             };
+
+            _log.LogInformation($"Created new subscription for {model.ServiceId} with {model.PhoneNumber}");
 
             await _dbContext.Subscribers.AddAsync(newSubscription);
             await _dbContext.SaveChangesAsync();
@@ -102,6 +107,7 @@ namespace SubsAPI.Services
             _dbContext.Subscribers.Update(checkActiveSubscription);
             await _dbContext.SaveChangesAsync();
 
+            _log.LogInformation($"Unsubscribed {model.ServiceId} on {model.PhoneNumber} at {checkActiveSubscription.UnsubscribeDate}");
 
             result.Data = new UnSubscribeResponseDto
             {

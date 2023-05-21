@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SubsAPI.Data;
-using SubsAPI.DTO.InternalRequest;
 using SubsAPI.Helpers;
 using System;
 using System.Collections.Generic;
