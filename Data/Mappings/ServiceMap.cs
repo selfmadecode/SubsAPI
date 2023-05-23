@@ -18,14 +18,14 @@ namespace SubsAPI.Data.Mappings
         {
             var ServiceAccount1 = new Service
             {
-                Id = "fdf8fe94d",
+                Id = "subsadmin@gmail.com",
                 Password = "SubsAdmin1".Encrypt(),
                 DateCreated = DateTime.UtcNow
             };
 
             var ServiceAccount2 = new Service
             {
-                Id = "1e471916b",
+                Id = "subsadmin1@gmail.com",
                 Password = "SubsAdmin2".Encrypt(),
                 DateCreated = DateTime.UtcNow
             };

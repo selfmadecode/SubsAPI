@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SubsAPI.Migrations
 {
-    public partial class initialMigration : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -81,12 +81,12 @@ namespace SubsAPI.Migrations
             migrationBuilder.InsertData(
                 table: "Services",
                 columns: new[] { "Id", "DateCreated", "Password" },
-                values: new object[] { "fdf8fe94d", new DateTime(2023, 5, 21, 11, 49, 44, 478, DateTimeKind.Utc).AddTicks(9593), "DAAAAO/ETBY5JLXHIkNeuRAAAACQc/FfqR79d1QA8ucx/SBW4VCAsUAsiiSn4Q==" });
+                values: new object[] { "subsadmin@gmail.com", new DateTime(2023, 5, 23, 16, 24, 46, 609, DateTimeKind.Utc).AddTicks(541), "DAAAACQ0y1lBSB4fa8G+4xAAAACCGGCYMwX8dvnCd2sRTtTd3OLrNhrYPDs7hQ==" });
 
             migrationBuilder.InsertData(
                 table: "Services",
                 columns: new[] { "Id", "DateCreated", "Password" },
-                values: new object[] { "1e471916b", new DateTime(2023, 5, 21, 11, 49, 44, 479, DateTimeKind.Utc).AddTicks(155), "DAAAAGozHmFsp6U3h7X9aBAAAADqAJCyM0rzChYg/9MuBtBNNXmMJJtywpiYmw==" });
+                values: new object[] { "subsadmin1@gmail.com", new DateTime(2023, 5, 23, 16, 24, 46, 609, DateTimeKind.Utc).AddTicks(1305), "DAAAAI8OefUpjakZcYOqAxAAAAA5ghzsQnh278p+du63Hql9mUJrgC/SATYGnQ==" });
 
             migrationBuilder.InsertData(
                 table: "TokenExpiration",

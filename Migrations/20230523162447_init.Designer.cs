@@ -10,8 +10,8 @@ using SubsAPI.Data;
 namespace SubsAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230521114944_initialMigration")]
-    partial class initialMigration
+    [Migration("20230523162447_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,15 +39,15 @@ namespace SubsAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fdf8fe94d",
-                            DateCreated = new DateTime(2023, 5, 21, 11, 49, 44, 478, DateTimeKind.Utc).AddTicks(9593),
-                            Password = "DAAAAO/ETBY5JLXHIkNeuRAAAACQc/FfqR79d1QA8ucx/SBW4VCAsUAsiiSn4Q=="
+                            Id = "subsadmin@gmail.com",
+                            DateCreated = new DateTime(2023, 5, 23, 16, 24, 46, 609, DateTimeKind.Utc).AddTicks(541),
+                            Password = "DAAAACQ0y1lBSB4fa8G+4xAAAACCGGCYMwX8dvnCd2sRTtTd3OLrNhrYPDs7hQ=="
                         },
                         new
                         {
-                            Id = "1e471916b",
-                            DateCreated = new DateTime(2023, 5, 21, 11, 49, 44, 479, DateTimeKind.Utc).AddTicks(155),
-                            Password = "DAAAAGozHmFsp6U3h7X9aBAAAADqAJCyM0rzChYg/9MuBtBNNXmMJJtywpiYmw=="
+                            Id = "subsadmin1@gmail.com",
+                            DateCreated = new DateTime(2023, 5, 23, 16, 24, 46, 609, DateTimeKind.Utc).AddTicks(1305),
+                            Password = "DAAAAI8OefUpjakZcYOqAxAAAAA5ghzsQnh278p+du63Hql9mUJrgC/SATYGnQ=="
                         });
                 });
 
